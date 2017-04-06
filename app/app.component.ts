@@ -2,8 +2,6 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 
 import * as application from 'application';
 
-declare var android;
-
 @Component({
     selector: "my-app",
     templateUrl: "app.component.html",
@@ -38,10 +36,13 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     addLifecycleEventlisteners() {
-        application.android.on(application.AndroidApplication.activityResumedEvent, (args) => {
-            if (args.activity.getIntent().getAction() === android.content.Intent.ACTION_VIEW) {
-                const intentData = args.activity.getIntent().getData();
-                console.log(`- Android received ACTION_VIEW intent, with data: ${intentData}`);
+        application.android.on(application.AndroidApplication.activityResumedEvent, (args: application.ApplicationEventData) => {
+            if (args.android) {
+                // For Android applications, args.android is an android activity class.
+                console.log("ActivityResumed: " + args.android);
+            } else if (args.ios) {
+                // For iOS applications, args.ios is UIApplication.
+                console.log("UIApplication: " + args.ios);
             }
         });
 
