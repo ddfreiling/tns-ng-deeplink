@@ -20,6 +20,27 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
+
+	<!-- Setup deep linking scheme -->
+	<key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>deeplink</string>
+      </array>
+      <key>CFBundleURLName</key>
+      <string>my-deeplink</string>
+    </dict>
+  </array>
+
+	<!--Include to allow all connections (DANGER)-->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+				<true/>
+	</dict>
+
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -1,51 +1,63 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, EventEmitter, NgZone } from "@angular/core";
+import { Router } from '@angular/router';
 
 import * as application from 'application';
+import { isAndroid, isIOS } from 'platform';
+
+let OnRouteToURL: EventEmitter<string>;
+if (isIOS) {
+    application.ios.delegate = require('./delegate').CustomAppDelegate
+    OnRouteToURL = require('./delegate').OnRouteToURL;
+} else if (isAndroid) {
+    OnRouteToURL = require('./activity').OnRouteToURL;
+}
 
 @Component({
-    selector: "my-app",
+    selector: "ns-app",
     templateUrl: "app.component.html",
 })
 export class AppComponent implements OnInit, OnDestroy {
+
     public static InstanceCounter = 0;
 
     public counter: number = 16;
     private instanceNum;
 
-    ngOnInit() {
+
+    constructor(
+        private zone: NgZone,
+        private router: Router
+    ) {
         this.instanceNum = ++AppComponent.InstanceCounter;
-        console.log(` === AppComponent<${this.instanceNum}> OnInit ===`);
+        console.log(`<${this.instanceNum}>AppComponent.constructor`);
+    }
+
+    ngOnInit() {
+        console.log(`<${this.instanceNum}>AppComponent.onInit`);
         this.addLifecycleEventlisteners();
+
+        // Subscribe to routing events from both platforms
+        OnRouteToURL.subscribe((url) => this.handleRouting(url));
     }
 
     ngOnDestroy() {
-        console.log(` === AppComponent<${this.instanceNum}> OnDestroy ===`);
+        console.log(`<${this.instanceNum}>AppComponent.onDestroy`);
         this.removeLifecycleEventlisteners();
     }
 
-    public get message(): string {
-        if (this.counter > 0) {
-            return this.counter + " taps left";
-        } else {
-            return "Hoorraaay! \nYou are ready to start building!";
-        }
-    }
-    
-    public onTap() {
-        this.counter--;
+    handleRouting(url: string) {
+        // Assume everything after :// is an app route
+        // in production you might want to limit which routes are allowed to deep-link
+        const route = url.substr(url.indexOf('://') + 3);
+        console.log(`AppComponent: Navigate to route '${route}'`);
+
+        // Do the routing in the Angular Zone, just to be sure
+        this.zone.run(() => {
+            this.router.navigateByUrl(route);
+        });
     }
 
     addLifecycleEventlisteners() {
-        application.android.on(application.AndroidApplication.activityResumedEvent, (args: application.ApplicationEventData) => {
-            if (args.android) {
-                // For Android applications, args.android is an android activity class.
-                console.log("ActivityResumed: " + args.android);
-            } else if (args.ios) {
-                // For iOS applications, args.ios is UIApplication.
-                console.log("UIApplication: " + args.ios);
-            }
-        });
-
         application.on(application.launchEvent, function (args: application.ApplicationEventData) {
             if (args.android) {
                 // For Android applications, args.android is an android.content.Intent class.
