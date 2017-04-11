@@ -28,5 +28,6 @@ export class MainComponent implements OnInit, OnDestroy {
     
     public onTap() {
         this.counter--;
+        console.log(`onTap: ${this.counter} left`);
     }
 }
