@@ -1,6 +1,6 @@
-import { EventEmitter } from '@angular/core';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
-export var OnRouteToURL = new EventEmitter<string>();
+export var OnRouteToURL = new ReplaySubject<string>();
 
 export class CustomAppDelegate extends UIResponder implements UIApplicationDelegate {
   
@@ -24,6 +24,6 @@ export class CustomAppDelegate extends UIResponder implements UIApplicationDeleg
 
   private handleRouting(url: any) {
     console.log(`iOS.AppDelegate Handle Routing: ${url.absoluteString}`);
-    OnRouteToURL.emit(url.absoluteString);
+    OnRouteToURL.next(url.absoluteString);
   }
 }

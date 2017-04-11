@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy, EventEmitter, NgZone } from "@angular/core";
-import { Router } from '@angular/router';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
+import { RouterExtensions } from 'nativescript-angular';
 import * as application from 'application';
 import { isAndroid, isIOS } from 'platform';
 
-let OnRouteToURL: EventEmitter<string>;
+let OnRouteToURL: ReplaySubject<string>;
 if (isIOS) {
     application.ios.delegate = require('./delegate').CustomAppDelegate
     OnRouteToURL = require('./delegate').OnRouteToURL;
@@ -26,7 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     constructor(
         private zone: NgZone,
-        private router: Router
+        private routerExt: RouterExtensions,
     ) {
         this.instanceNum = ++AppComponent.InstanceCounter;
         console.log(`<${this.instanceNum}>AppComponent.constructor`);
@@ -37,7 +38,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this.addLifecycleEventlisteners();
 
         // Subscribe to routing events from both platforms
-        OnRouteToURL.subscribe((url) => this.handleRouting(url));
+        OnRouteToURL.subscribe((url) => {
+            this.handleRouting(url)
+        });
     }
 
     ngOnDestroy() {
@@ -51,13 +54,20 @@ export class AppComponent implements OnInit, OnDestroy {
         const route = url.substr(url.indexOf('://') + 3);
         console.log(`AppComponent: Navigate to route '${route}'`);
 
-        // Do the routing in the Angular Zone, just to be sure
-        this.zone.run(() => {
-            this.router.navigateByUrl(route);
+        // Do the routing in the Angular Zone on next tick,
+        // to ensure that we're in the right context and router is ready.
+        setTimeout(() => {
+            this.zone.run(() => {
+                this.routerExt.navigateByUrl(route);
+            });
         });
     }
 
+
+    // NOTE: These life-cycle listeners are not necessary for deep-linking
+
     addLifecycleEventlisteners() {
+
         application.on(application.launchEvent, function (args: application.ApplicationEventData) {
             if (args.android) {
                 // For Android applications, args.android is an android.content.Intent class.
