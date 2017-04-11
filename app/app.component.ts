@@ -7,8 +7,9 @@ import { isAndroid, isIOS } from 'platform';
 
 let OnRouteToURL: ReplaySubject<string>;
 if (isIOS) {
-    application.ios.delegate = require('./delegate').CustomAppDelegate
-    OnRouteToURL = require('./delegate').OnRouteToURL;
+    const { CustomAppDelegate, OnRouteToURL: iOSOnRouteToURL } = require('./delegate');
+    application.ios.delegate = CustomAppDelegate
+    OnRouteToURL = iOSOnRouteToURL;
 } else if (isAndroid) {
     OnRouteToURL = require('./activity').OnRouteToURL;
 }
@@ -20,10 +21,7 @@ if (isIOS) {
 export class AppComponent implements OnInit, OnDestroy {
 
     public static InstanceCounter = 0;
-
-    public counter: number = 16;
     private instanceNum;
-
 
     constructor(
         private zone: NgZone,

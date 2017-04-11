@@ -8,10 +8,6 @@ export class Activity extends android.app.Activity {
 
     private _callbacks: AndroidActivityCallbacks;
 
-    public getStartupIntent(): android.content.Intent {
-        return this.getIntent();
-    }
-
     protected onCreate(savedInstanceState: android.os.Bundle): void {
         if (!this._callbacks) {
             setActivityCallbacks(this);
