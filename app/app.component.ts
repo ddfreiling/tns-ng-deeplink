@@ -7,11 +7,11 @@ import { isAndroid, isIOS } from 'platform';
 
 let OnRouteToURL: ReplaySubject<string>;
 if (isIOS) {
-    const { CustomAppDelegate, OnRouteToURL: iOSOnRouteToURL } = require('./delegate');
+    const { CustomAppDelegate, iOSOnRouteToURL } = require('./delegate');
     application.ios.delegate = CustomAppDelegate
     OnRouteToURL = iOSOnRouteToURL;
 } else if (isAndroid) {
-    OnRouteToURL = require('./activity').OnRouteToURL;
+    OnRouteToURL = require('./activity').AndroidOnRouteToURL;
 }
 
 @Component({

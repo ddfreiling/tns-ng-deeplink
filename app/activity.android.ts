@@ -1,7 +1,7 @@
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { setActivityCallbacks, AndroidActivityCallbacks } from 'ui/frame';
 
-export var OnRouteToURL = new ReplaySubject<string>();
+export var AndroidOnRouteToURL = new ReplaySubject<string>();
 
 @JavaProxy('com.my.company.MainActivity')
 export class Activity extends android.app.Activity {
@@ -64,7 +64,7 @@ export class Activity extends android.app.Activity {
         const dataStr = intent.getDataString();
         console.info(`MainActivity.handleIntent: [${action}] ${dataStr}`);
         if (action === android.content.Intent.ACTION_VIEW && dataStr !== null) {
-            OnRouteToURL.next(dataStr);
+            AndroidOnRouteToURL.next(dataStr);
         }
     }
 }

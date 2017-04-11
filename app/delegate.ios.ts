@@ -1,6 +1,6 @@
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
-export var OnRouteToURL = new ReplaySubject<string>();
+export var iOSOnRouteToURL = new ReplaySubject<string>();
 
 export class CustomAppDelegate extends UIResponder implements UIApplicationDelegate {
   
@@ -24,6 +24,6 @@ export class CustomAppDelegate extends UIResponder implements UIApplicationDeleg
 
   private handleRouting(url: any) {
     console.log(`iOS.AppDelegate Handle Routing: ${url.absoluteString}`);
-    OnRouteToURL.next(url.absoluteString);
+    iOSOnRouteToURL.next(url.absoluteString);
   }
 }
